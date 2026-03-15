@@ -63,6 +63,21 @@ class UserDetailsServiceImplTest {
                 .isInstanceOf(UsernameNotFoundException.class);
     }
 
+    // AC-7 boundary: user with multiple roles should expose all ROLE_ authorities
+    @Test
+    void loadUserByUsername_withMultipleRoles_returnsAllAuthorities() {
+        Role roleUser = mockRole("USER");
+        Role roleAdmin = mockRole("ADMIN");
+        User user = mockUser("admin", "$2b$12$hash", true, Set.of(roleUser, roleAdmin));
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+
+        UserDetails details = service.loadUserByUsername("admin");
+
+        assertThat(details.getAuthorities())
+                .extracting("authority")
+                .containsExactlyInAnyOrder("ROLE_USER", "ROLE_ADMIN");
+    }
+
     // --- helpers ---
 
     private static Role mockRole(String code) {

@@ -156,4 +156,38 @@ class AuthIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.detail").exists());
         // instance field is set by Spring's ProblemDetail when status is written
     }
+
+    // AC-7: user with enabled=false must receive 401 (full IT with real DB)
+    @Test
+    void login_withDisabledUser_returns401() throws Exception {
+        // "disabled" user seeded in V3 with enabled=false
+        mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new LoginRequest("disabled_user", "Disabled@123"))))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401));
+    }
+
+    // AC-14: mutating request with wrong (non-matching) CSRF token value must return 403
+    @Test
+    void logout_withWrongCsrfToken_returns403() throws Exception {
+        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new LoginRequest("user01", "User@123"))))
+                .andExpect(status().isOk())
+                .andReturn();
+        MockHttpSession session = (MockHttpSession) loginResult.getRequest().getSession(false);
+
+        mockMvc.perform(post("/api/v1/auth/logout")
+                .session(session)
+                .header("X-CSRF-TOKEN", "completely-wrong-token-value"))
+                .andExpect(status().isForbidden());
+    }
+
+    // AC-19: /v3/api-docs must be accessible in test profile (springdoc enabled)
+    @Test
+    void springdoc_apiDocs_available_inTestProfile() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk());
+    }
 }

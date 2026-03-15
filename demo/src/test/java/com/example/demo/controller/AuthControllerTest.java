@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 /**
  * TST-4: @WebMvcTest slice tests for AuthController + SecurityConfig.
@@ -90,5 +91,17 @@ class AuthControllerTest {
         mockMvc.perform(get("/api/v1/some-resource"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON));
+    }
+
+    // AC-30, AC-31: CORS preflight for http://localhost:5173 must be allowed with credentials
+    @Test
+    void login_cors_preflight_allowsLocalhost5173() throws Exception {
+        mockMvc.perform(options("/api/v1/auth/login")
+                .header("Origin", "http://localhost:5173")
+                .header("Access-Control-Request-Method", "POST")
+                .header("Access-Control-Request-Headers", "Content-Type"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"))
+                .andExpect(header().string("Access-Control-Allow-Credentials", "true"));
     }
 }
