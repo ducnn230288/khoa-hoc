@@ -141,7 +141,7 @@ Hệ thống cần cơ chế xác thực an toàn theo mô hình **server-side s
 | Attribute | dev | staging | prod |
 |-----------|-----|---------|------|
 | `HttpOnly` | true | true | true |
-| `SameSite` | None | None | None |
+| `SameSite` | Lax | None | None |
 | `Secure` | false (không bắt buộc) | true | true |
 | `Path` | / | / | / |
 
@@ -359,7 +359,7 @@ Tài liệu phải mô tả: login, csrf, logout, cookie policy, header `X-CSRF-
 
 **AC-3**: Session cookie phải có attribute `HttpOnly=true`.
 
-**AC-4**: Session cookie phải có attribute `SameSite=None`.
+**AC-4**: Session cookie phải có cookie policy theo môi trường: `dev` dùng `SameSite=Lax`; `staging` và `prod` dùng `SameSite=None`.
 
 **AC-5**: Ở môi trường `staging` và `prod`, session cookie phải có attribute `Secure=true`.
 
@@ -431,6 +431,16 @@ Tài liệu phải mô tả: login, csrf, logout, cookie policy, header `X-CSRF-
 
 **AC-32**: Tất cả error response phải theo định dạng RFC 7807 Problem Details với ít nhất các field: `type`, `title`, `status`, `detail`, `instance`.
 
+### Frontend Routing / Dev Browser Behavior
+
+**AC-33**: Sau khi `POST /api/v1/auth/login` thành công, frontend phải gọi `GET /api/v1/auth/csrf` với chính `JSESSIONID` vừa nhận và nhận `200 OK` trên flow HTTP thực tế (bao gồm dev proxy `localhost:5173 -> localhost:8080`).
+
+**AC-34**: Ở môi trường `dev`, cookie session sau login phải được trình duyệt Chromium chấp nhận trên local HTTP khi frontend đi qua Vite proxy `http://localhost:5173`, không yêu cầu HTTPS local chỉ để duy trì session login cơ bản.
+
+**AC-35**: Sau khi login thành công và frontend lấy được CSRF token, người dùng phải được điều hướng từ `/login` sang dashboard route `/`.
+
+**AC-36**: Nếu người dùng đã authenticated mà truy cập route `/login`, frontend phải tự động redirect về `/` thay vì tiếp tục hiển thị form login.
+
 ---
 
 ## 8. Examples
@@ -442,7 +452,7 @@ Tài liệu phải mô tả: login, csrf, logout, cookie policy, header `X-CSRF-
    Body: { "username": "user01", "password": "User@123" }
 
 2. Server: 200 OK
-   Set-Cookie: JSESSIONID=abc123; HttpOnly; SameSite=None; Path=/
+   Set-Cookie: JSESSIONID=abc123; HttpOnly; SameSite=Lax; Path=/
    Body: { "authenticated": true, "username": "user01", "roles": ["USER"] }
 
 3. Client: GET /api/v1/auth/csrf
@@ -452,6 +462,8 @@ Tài liệu phải mô tả: login, csrf, logout, cookie policy, header `X-CSRF-
    Body: { "csrfToken": "xyz789", "headerName": "X-CSRF-TOKEN", "parameterName": "_csrf" }
 
 5. Client lưu csrfToken = "xyz789" vào memory state.
+
+6. Frontend redirect người dùng sang route "/".
 ```
 
 ---
@@ -609,7 +621,7 @@ Xử lý FE: Hiển thị "Phiên bảo mật không hợp lệ", đề xuất t
 | AC-1 | Login endpoint tồn tại | Login screen | `POST /api/v1/auth/login` | — | — | Public | IT |
 | AC-2 | Login thành công → Set-Cookie | Login screen | `POST /api/v1/auth/login` | users | — | Public | IT |
 | AC-3 | Cookie HttpOnly=true | — | `POST /api/v1/auth/login` | — | — | — | IT |
-| AC-4 | Cookie SameSite=None | — | `POST /api/v1/auth/login` | — | — | — | IT |
+| AC-4 | Cookie SameSite theo profile (dev=Lax, staging/prod=None) | — | `POST /api/v1/auth/login` | — | — | — | IT |
 | AC-5 | Cookie Secure=true (staging/prod) | — | `POST /api/v1/auth/login` | — | — | — | IT |
 | AC-6 | Login thất bại → 401, không tạo session | Login screen | `POST /api/v1/auth/login` | users | — | Public | IT, BB |
 | AC-7 | enabled=false không login được | — | `POST /api/v1/auth/login` | users.enabled | — | — | UT, IT |
@@ -638,6 +650,10 @@ Xử lý FE: Hiển thị "Phiên bảo mật không hợp lệ", đề xuất t
 | AC-30 | CORS allow localhost:5173 | — | All endpoints | — | — | — | IT, E2E |
 | AC-31 | Không dùng CORS wildcard | — | All endpoints | — | — | — | IT |
 | AC-32 | Error response theo RFC 7807 | — | All error paths | — | — | — | IT, BB |
+| AC-33 | Login rồi gọi /csrf với JSESSIONID trả về phải thành công trên HTTP thật | Login screen | `POST /api/v1/auth/login` -> `GET /api/v1/auth/csrf` | — | — | Public -> Authenticated | IT, E2E |
+| AC-34 | Dev cookie phải tương thích Chromium local qua Vite proxy | Login screen | `POST /api/v1/auth/login` | — | — | dev | E2E, Config review |
+| AC-35 | Login thành công phải redirect sang "/" | Login screen | FE route transition | — | — | Public -> Authenticated | E2E, FE component test |
+| AC-36 | User đã authenticated vào "/login" phải redirect về "/" | Login screen | FE route transition | — | — | Authenticated | E2E, FE component test |
 
 **Chú thích test type**:
 - **UT** = Unit Test (logic nghiệp vụ độc lập)
@@ -652,7 +668,7 @@ Xử lý FE: Hiển thị "Phiên bảo mật không hợp lệ", đề xuất t
 ### ✅ YES — Có thể bắt đầu triển khai
 
 **Lý do**:
-- Tất cả 29 AC ban đầu + 3 AC bổ sung (AC-30, AC-31, AC-32) đều testable và có đủ thông tin.
+- Tất cả 29 AC ban đầu + 7 AC bổ sung (AC-30 -> AC-36) đều testable và có đủ thông tin.
 - Tất cả open issues quan trọng (OI-1 đến OI-5 + OI-6 đến OI-10) đã được chốt.
 - Database schema, API contract, cookie policy, error format, migration plan đều được xác định rõ.
 

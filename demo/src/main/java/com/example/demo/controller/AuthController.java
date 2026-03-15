@@ -19,8 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,9 +35,13 @@ import java.util.List;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final SecurityContextRepository securityContextRepository;
 
-    public AuthController(AuthenticationManager authenticationManager) {
+    public AuthController(
+            AuthenticationManager authenticationManager,
+            SecurityContextRepository securityContextRepository) {
         this.authenticationManager = authenticationManager;
+        this.securityContextRepository = securityContextRepository;
     }
 
     /**
@@ -63,7 +67,8 @@ public class AuthController {
         sc.setAuthentication(auth);
         SecurityContextHolder.setContext(sc);
         // Persist security context in the HTTP session
-        new HttpSessionSecurityContextRepository().saveContext(sc, httpRequest, httpResponse);
+        httpRequest.getSession(true);
+        securityContextRepository.saveContext(sc, httpRequest, httpResponse);
 
         List<String> roles = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -84,8 +89,8 @@ public class AuthController {
         @ApiResponse(responseCode = "401", description = "No valid session (RFC 7807)")
     })
     @GetMapping("/csrf")
-    public ResponseEntity<CsrfResponse> csrf(@RequestAttribute(required = false) CsrfToken csrfToken) {
-        // If session doesn't exist the SecurityFilterChain returns 401 before reaching here
+    public ResponseEntity<CsrfResponse> csrf(CsrfToken csrfToken) {
+        // Spring Security resolves/generates the token when the controller asks for it directly.
         if (csrfToken == null) {
             throw new org.springframework.security.authentication.InsufficientAuthenticationException(
                     "No CSRF token available for this session.");

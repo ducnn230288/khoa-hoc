@@ -9,11 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -40,15 +44,24 @@ class AuthControllerTest {
     @MockitoBean
     UserDetailsService userDetailsServiceGeneric;
 
+    @MockitoBean
+    AuthenticationManager authenticationManager;
+
     @Test
     void login_withValidCredentials_returns200WithSetCookie() throws Exception {
+        when(authenticationManager.authenticate(any())).thenReturn(
+                UsernamePasswordAuthenticationToken.authenticated(
+                        "user01",
+                        null,
+                        java.util.List.of(new SimpleGrantedAuthority("ROLE_USER"))));
+
         // This test exercises the security filter chain with a real user
         // The actual authentication path via AuthenticationManager is tested in integration tests
         // Here we verify the endpoint is accessible (permit all) and returns the right structure
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new LoginRequest("user01", "User@123"))))
-                .andExpect(status().isIn(200, 401)); // 401 expected here since no real DB
+                .andExpect(result -> assertThat(result.getResponse().getStatus()).isIn(200, 401));
     }
 
     @Test

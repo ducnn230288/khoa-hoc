@@ -1,4 +1,5 @@
 # Implementation Plan — AUTH-001
+
 _Tạo: 2026-03-13 · Trạng thái: Draft_
 
 ---
@@ -7,14 +8,14 @@ _Tạo: 2026-03-13 · Trạng thái: Draft_
 
 **Phương án duy nhất** (theo spec-pack): Spring Security built-in session + CSRF, không có alternative.
 
-| Quyết định | Lý do |
-|---|---|
-| Spring Security session (in-memory) | Spec AC-29: không dùng Redis/persistent store |
-| CSRF token qua API riêng (`GET /api/v1/auth/csrf`) | Spec AC-9: không nhúng token trong login response |
-| BCrypt cost 12 | Spec AC-NFR-1, SEC-3 |
-| Flyway V3 conditional theo `spring.flyway.locations` profile | Spec AC-27, AC-28 |
-| Springdoc tắt prod qua Spring profile | Spec AC-21, SEC-8 |
-| RFC 7807 cho tất cả error | Spec AC-32, SEC-9 |
+| Quyết định                                                   | Lý do                                             |
+| ------------------------------------------------------------ | ------------------------------------------------- |
+| Spring Security session (in-memory)                          | Spec AC-29: không dùng Redis/persistent store     |
+| CSRF token qua API riêng (`GET /api/v1/auth/csrf`)           | Spec AC-9: không nhúng token trong login response |
+| BCrypt cost 12                                               | Spec AC-NFR-1, SEC-3                              |
+| Flyway V3 conditional theo `spring.flyway.locations` profile | Spec AC-27, AC-28                                 |
+| Springdoc tắt prod qua Spring profile                        | Spec AC-21, SEC-8                                 |
+| RFC 7807 cho tất cả error                                    | Spec AC-32, SEC-9                                 |
 
 ---
 
@@ -94,11 +95,11 @@ my-react-app/src/main.tsx               ← không thay đổi (mount point gi�
 
 ### 2.5 Database / config
 
-| Đối tượng | Hành động |
-|---|---|
-| Bảng `users`, `roles`, `user_roles` | Tạo mới qua Flyway V2 |
-| Seed rows `admin`, `user01` | Tạo qua Flyway V3 (dev/test only) |
-| PostgreSQL connection | Cấu hình trong `application-{profile}.properties` |
+| Đối tượng                           | Hành động                                         |
+| ----------------------------------- | ------------------------------------------------- |
+| Bảng `users`, `roles`, `user_roles` | Tạo mới qua Flyway V2                             |
+| Seed rows `admin`, `user01`         | Tạo qua Flyway V3 (dev/test only)                 |
+| PostgreSQL connection               | Cấu hình trong `application-{profile}.properties` |
 
 ---
 
@@ -111,6 +112,7 @@ my-react-app/src/main.tsx               ← không thay đổi (mount point gi�
 **File**: `demo/build.gradle`
 
 Thêm vào block `dependencies`:
+
 ```gradle
 implementation 'org.springframework.boot:spring-boot-starter-security'
 implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -131,12 +133,14 @@ testImplementation 'org.testcontainers:postgresql'
 ### S-02 — BE: Cấu hình application properties (base + 3 profiles)
 
 **Files**:
+
 - `demo/src/main/resources/application.properties` — base (datasource, jpa, flyway base location)
 - `demo/src/main/resources/application-dev.properties` — session=8h, secure=false, springdoc=on, flyway.locations includes seed
 - `demo/src/main/resources/application-staging.properties` — session=2h, secure=true, springdoc=on
 - `demo/src/main/resources/application-prod.properties` — session=30m, secure=true, springdoc=off
 
 Key properties:
+
 ```properties
 # base
 spring.datasource.url=jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:demo}
@@ -203,6 +207,7 @@ Seed `admin` (role ADMIN) và `user01` (role USER) với BCrypt hash cost 12.
 **AC liên quan**: AC-27, AC-28
 
 **Verify**:
+
 - Profile `dev`: migration V3 chạy, 2 user tồn tại trong DB.
 - Profile `prod`: V3 không xuất hiện trong `flyway_schema_history`.
 
@@ -211,6 +216,7 @@ Seed `admin` (role ADMIN) và `user01` (role USER) với BCrypt hash cost 12.
 ### S-06 — BE: Entity + Repository
 
 **Files**:
+
 - `demo/src/main/java/com/example/demo/entity/User.java` — `@Entity`, fields theo schema V2
 - `demo/src/main/java/com/example/demo/entity/Role.java` — `@Entity`
 - `demo/src/main/java/com/example/demo/repository/UserRepository.java` — `JpaRepository<User, Long>`, thêm `findByUsername`
@@ -242,6 +248,7 @@ Seed `admin` (role ADMIN) và `user01` (role USER) với BCrypt hash cost 12.
 **File**: `demo/src/main/java/com/example/demo/config/SecurityConfig.java`
 
 Config items:
+
 - `SecurityFilterChain`: permit `POST /api/v1/auth/login`, `GET /api/v1/auth/csrf` (sau auth), `POST /api/v1/auth/logout`; authenticate tất cả còn lại
 - Session: `IF_REQUIRED`, `maximumSessions` không giới hạn, `HttpOnly=true`, `SameSite=None`
 - CSRF: bật, `CookieCsrfTokenRepository` hoặc `HttpSessionCsrfTokenRepository`; custom header `X-CSRF-TOKEN`
@@ -259,6 +266,7 @@ Config items:
 ### S-09 — BE: DTOs
 
 **Files** (Java records):
+
 - `dto/LoginRequest.java` — `username`, `password`
 - `dto/LoginResponse.java` — `authenticated`, `username`, `roles`
 - `dto/CsrfResponse.java` — `csrfToken`, `headerName`, `parameterName`
@@ -277,6 +285,7 @@ Config items:
 **File**: `demo/src/main/java/com/example/demo/controller/AuthController.java`
 
 Endpoints:
+
 - `POST /api/v1/auth/login` — authenticate, tạo session, trả `LoginResponse`
 - `GET /api/v1/auth/csrf` — lấy CSRF token từ session, trả `CsrfResponse`; nếu không có session → delegate tới `AuthenticationEntryPoint`
 - `POST /api/v1/auth/logout` — invalidate session, clear cookie, trả `LogoutResponse`
@@ -284,6 +293,7 @@ Endpoints:
 **AC liên quan**: AC-1, AC-2, AC-6, AC-9, AC-10, AC-11, AC-16, AC-17, AC-18
 
 **Verify**:
+
 - `@WebMvcTest` slice: `login_withValidCredentials_returns200WithSetCookie`
 - `@WebMvcTest` slice: `login_withWrongPassword_returns401ProblemDetail`
 - `@WebMvcTest` slice: `csrf_withoutSession_returns401ProblemDetail`
@@ -316,6 +326,7 @@ Endpoints:
 **AC liên quan**: AC-19, AC-20, AC-21, AC-22
 
 **Verify**:
+
 - Profile `dev`: `GET /v3/api-docs` trả 200 với 3 endpoints auth có docs.
 - Profile `prod`: `GET /v3/api-docs` trả 404.
 
@@ -324,18 +335,20 @@ Endpoints:
 ### S-13 — FE: Vite proxy + `src/api/authApi.ts`
 
 **Files**:
+
 - `my-react-app/vite.config.ts` — thêm `server.proxy`: `/api` → `http://localhost:8080`
 - `my-react-app/src/api/authApi.ts` — `login()`, `fetchCsrf()`, `logout()` dùng `credentials: 'include'` và đính `X-CSRF-TOKEN` cho mutating calls
 
-**AC liên quan**: AR-F3
+**AC liên quan**: AR-F3, AC-33, AC-34
 
-**Verify**: `npm run build` pass, `npm run lint` pass.
+**Verify**: `npm run build` pass, `npm run lint` pass. Kiểm tra Vite proxy `/api → http://localhost:8080` đảm bảo cookie `SameSite=Lax` từ backend được Chromium chấp nhận trên `http://localhost:5173` (không cần HTTPS).
 
 ---
 
 ### S-14 — FE: `AuthContext` + `useAuth` hook
 
 **Files**:
+
 - `my-react-app/src/context/AuthContext.tsx` — context chứa `{ user, csrfToken, login, logout, isAuthenticated }`
 - `my-react-app/src/hooks/useAuth.ts` — expose context + async actions (gọi `authApi`, update state)
 
@@ -348,13 +361,14 @@ Endpoints:
 ### S-15 — FE: Components (LoginForm, ProtectedRoute, Dashboard)
 
 **Files**:
+
 - `my-react-app/src/components/LoginForm.tsx` — form theo wireframe spec §5.11, gọi `useAuth().login`
 - `my-react-app/src/components/ProtectedRoute.tsx` — redirect về `/login` nếu `!isAuthenticated`
 - `my-react-app/src/components/Dashboard.tsx` — hiển thị username, session active, CSRF loaded, nút Logout
 
-**AC liên quan**: AC-1, AC-16, wireframes
+**AC liên quan**: AC-1, AC-16, wireframes, AC-35, AC-36
 
-**Verify**: Vitest RTL — LoginForm hiển thị error khi `login` reject; ProtectedRoute redirect khi unauthenticated.
+**Verify**: Vitest RTL — LoginForm hiển thị error khi `login` reject; ProtectedRoute redirect khi unauthenticated; LoginPage redirect về `/` nếu user đã authenticated (AC-36); LoginForm redirect sang `/` sau khi login + lấy CSRF token thành công (AC-35).
 
 ---
 
@@ -371,21 +385,21 @@ Endpoints:
 </AuthProvider>
 ```
 
-**AC liên quan**: AR-F1, AR-F5
+**AC liên quan**: AR-F1, AR-F5, AC-35, AC-36
 
-**Verify**: `npm run build` pass. Manual smoke: login flow end-to-end trong browser (dev profile).
+**Verify**: `npm run build` pass. Manual smoke: login flow end-to-end trong browser (dev profile) — sau login thành công, trình duyệt redirect sang `/` (AC-35); truy cập `/login` khi đã đăng nhập → tự redirect về `/` (AC-36).
 
 ---
 
 ## 4. Rủi ro & giảm thiểu
 
-| # | Rủi ro | Giảm thiểu |
-|---|---|---|
-| R-1 | Cross-site cookie không gửi được nếu `SameSite=None` thiếu `Secure` ở staging/prod | Kiểm tra cookie header ngay S-08; E2E test với đúng profile |
-| R-2 | Flyway V3 accidentally chạy ở prod | Guard bằng `spring.flyway.locations` per profile; CI check profile |
-| R-3 | Spring 6 `ProblemDetail` built-in vs custom record conflict | Dùng Spring built-in `ProblemDetail`; không tạo duplicate class |
-| R-4 | CSRF token mất khi FE reload | `useAuth` gọi `fetchCsrf` khi app init nếu session còn hợp lệ |
-| R-5 | `SecurityConfig` chặn nhầm `/api/v1/auth/login` → login không được | `@WebMvcTest` slice test S-08 chạy trước khi merge |
+| #   | Rủi ro                                                                             | Giảm thiểu                                                         |
+| --- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| R-1 | Cross-site cookie không gửi được nếu `SameSite=None` thiếu `Secure` ở staging/prod | Kiểm tra cookie header ngay S-08; E2E test với đúng profile        |
+| R-2 | Flyway V3 accidentally chạy ở prod                                                 | Guard bằng `spring.flyway.locations` per profile; CI check profile |
+| R-3 | Spring 6 `ProblemDetail` built-in vs custom record conflict                        | Dùng Spring built-in `ProblemDetail`; không tạo duplicate class    |
+| R-4 | CSRF token mất khi FE reload                                                       | `useAuth` gọi `fetchCsrf` khi app init nếu session còn hợp lệ      |
+| R-5 | `SecurityConfig` chặn nhầm `/api/v1/auth/login` → login không được                 | `@WebMvcTest` slice test S-08 chạy trước khi merge                 |
 
 ---
 
@@ -393,11 +407,11 @@ Endpoints:
 
 Vì đây là greenfield (không có code/data production hiện tại):
 
-| Tình huống | Rollback |
-|---|---|
+| Tình huống          | Rollback                                                      |
+| ------------------- | ------------------------------------------------------------- |
 | Slice S-01 đến S-12 | Revert commit, DB được tạo mới bằng Flyway → drop và recreate |
-| Slice S-13 đến S-16 | Revert commit FE, không ảnh hưởng BE |
-| Migration đã chạy | Flyway repair + manual DROP TABLE nếu cần (môi trường dev) |
+| Slice S-13 đến S-16 | Revert commit FE, không ảnh hưởng BE                          |
+| Migration đã chạy   | Flyway repair + manual DROP TABLE nếu cần (môi trường dev)    |
 
 ---
 
@@ -421,47 +435,51 @@ Vì đây là greenfield (không có code/data production hiện tại):
 
 ## 7. Open Issues (carry-over — không block triển khai dev)
 
-| ID | Câu hỏi | Block |
-|---|---|---|
-| OI-A' | CORS `allowedOrigins` cho prod | ✅ Block deploy prod |
-| OI-B | RFC 7807 `type` URI namespace — dùng `https://errors.example.com/...` placeholder | ❌ |
-| OI-C | HTTPS local setup guide cho staging/prod cookie `Secure=true` | ❌ |
+| ID    | Câu hỏi                                                                           | Block                |
+| ----- | --------------------------------------------------------------------------------- | -------------------- |
+| OI-A' | CORS `allowedOrigins` cho prod                                                    | ✅ Block deploy prod |
+| OI-B  | RFC 7807 `type` URI namespace — dùng `https://errors.example.com/...` placeholder | ❌                   |
+| OI-C  | HTTPS local setup guide cho staging/prod cookie `Secure=true`                     | ❌                   |
 
 ---
 
 ## 8. AC Mapping Table
 
-| AC | Mô tả ngắn | Slice(s) | File(s) chính | Test type |
-|---|---|---|---|---|
-| AC-1 | `POST /api/v1/auth/login` tồn tại | S-09, S-10 | `AuthController`, `LoginRequest` | IT |
-| AC-2 | Login thành công → Set-Cookie JSESSIONID | S-08, S-10 | `SecurityConfig`, `AuthController` | IT |
-| AC-3 | Cookie HttpOnly=true | S-08 | `SecurityConfig` | IT |
-| AC-4 | Cookie SameSite=None | S-02, S-08 | `application.properties`, `SecurityConfig` | IT |
-| AC-5 | Cookie Secure=true (staging/prod) | S-02 | `application-staging.properties`, `application-prod.properties` | IT |
-| AC-6 | Login thất bại → 401 RFC 7807, không tạo session | S-10, S-11 | `AuthController`, `GlobalExceptionHandler` | IT, BB |
-| AC-7 | enabled=false → 401 | S-07 | `UserDetailsServiceImpl` | UT, IT |
-| AC-8 | Session timeout per environment | S-02 | `application-{profile}.properties` | IT |
-| AC-9 | `GET /api/v1/auth/csrf` trả đúng fields | S-09, S-10 | `CsrfResponse`, `AuthController` | IT |
-| AC-10 | CSRF endpoint chỉ hoạt động khi session hợp lệ | S-08, S-10 | `SecurityConfig`, `AuthController` | IT |
-| AC-11 | CSRF không có session → 401 | S-08, S-11 | `SecurityConfig`, `GlobalExceptionHandler` | IT, BB |
-| AC-12 | Mutating API yêu cầu CSRF | S-08 | `SecurityConfig` | IT |
-| AC-13 | Thiếu CSRF header → 403 | S-08, S-11 | `SecurityConfig`, `GlobalExceptionHandler` | IT, BB |
-| AC-14 | Sai CSRF token → 403 | S-08, S-11 | `SecurityConfig`, `GlobalExceptionHandler` | IT, BB |
-| AC-15 | CSRF qua header X-CSRF-TOKEN | S-08 | `SecurityConfig` | IT |
-| AC-16 | `POST /api/v1/auth/logout` tồn tại | S-09, S-10 | `AuthController`, `LogoutResponse` | IT |
-| AC-17 | Logout invalidates session | S-10 | `AuthController` | IT |
-| AC-18 | Logout clears cookie | S-10 | `AuthController` | IT |
-| AC-19 | Springdoc, `/v3/api-docs` available | S-01, S-12 | `build.gradle`, `SpringdocConfig` | IT |
-| AC-20 | Swagger UI dev/staging | S-02, S-12 | `application-dev.properties`, `SpringdocConfig` | IT |
-| AC-21 | Swagger UI disabled prod | S-02, S-12 | `application-prod.properties`, `SpringdocConfig` | IT |
-| AC-22 | Auth endpoints documented | S-12 | `AuthController` annotations | BB |
-| AC-23 | Kết nối PostgreSQL | S-01, S-02 | `build.gradle`, `application.properties` | IT |
-| AC-24 | User data trong PostgreSQL | S-04, S-06 | `V2__create_auth_tables.sql`, `User.java` | IT |
-| AC-25 | Flyway tự động chạy startup | S-01, S-02, S-03 | `build.gradle`, `application.properties`, `V1__init_schema.sql` | IT |
-| AC-26 | V2 tạo đúng schema | S-04 | `V2__create_auth_tables.sql` | IT |
-| AC-27 | V3 seed dev/test | S-05 | `V3__seed_dev_test_users.sql` | IT |
-| AC-28 | V3 không chạy staging/prod | S-02, S-05 | `application-{profile}.properties` | IT |
-| AC-29 | In-memory session, không Redis | S-08 | `SecurityConfig` | IT |
-| AC-30 | CORS allow localhost:5173 | S-08 | `SecurityConfig` | IT, E2E |
-| AC-31 | Không CORS wildcard | S-08 | `SecurityConfig` | IT |
-| AC-32 | Error response RFC 7807 | S-11 | `GlobalExceptionHandler` | IT, BB |
+| AC    | Mô tả ngắn                                                                    | Slice(s)         | File(s) chính                                                    | Test type              |
+| ----- | ----------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------- | ---------------------- |
+| AC-1  | `POST /api/v1/auth/login` tồn tại                                             | S-09, S-10       | `AuthController`, `LoginRequest`                                 | IT                     |
+| AC-2  | Login thành công → Set-Cookie JSESSIONID                                      | S-08, S-10       | `SecurityConfig`, `AuthController`                               | IT                     |
+| AC-3  | Cookie HttpOnly=true                                                          | S-08             | `SecurityConfig`                                                 | IT                     |
+| AC-4  | Cookie SameSite=None                                                          | S-02, S-08       | `application.properties`, `SecurityConfig`                       | IT                     |
+| AC-5  | Cookie Secure=true (staging/prod)                                             | S-02             | `application-staging.properties`, `application-prod.properties`  | IT                     |
+| AC-6  | Login thất bại → 401 RFC 7807, không tạo session                              | S-10, S-11       | `AuthController`, `GlobalExceptionHandler`                       | IT, BB                 |
+| AC-7  | enabled=false → 401                                                           | S-07             | `UserDetailsServiceImpl`                                         | UT, IT                 |
+| AC-8  | Session timeout per environment                                               | S-02             | `application-{profile}.properties`                               | IT                     |
+| AC-9  | `GET /api/v1/auth/csrf` trả đúng fields                                       | S-09, S-10       | `CsrfResponse`, `AuthController`                                 | IT                     |
+| AC-10 | CSRF endpoint chỉ hoạt động khi session hợp lệ                                | S-08, S-10       | `SecurityConfig`, `AuthController`                               | IT                     |
+| AC-11 | CSRF không có session → 401                                                   | S-08, S-11       | `SecurityConfig`, `GlobalExceptionHandler`                       | IT, BB                 |
+| AC-12 | Mutating API yêu cầu CSRF                                                     | S-08             | `SecurityConfig`                                                 | IT                     |
+| AC-13 | Thiếu CSRF header → 403                                                       | S-08, S-11       | `SecurityConfig`, `GlobalExceptionHandler`                       | IT, BB                 |
+| AC-14 | Sai CSRF token → 403                                                          | S-08, S-11       | `SecurityConfig`, `GlobalExceptionHandler`                       | IT, BB                 |
+| AC-15 | CSRF qua header X-CSRF-TOKEN                                                  | S-08             | `SecurityConfig`                                                 | IT                     |
+| AC-16 | `POST /api/v1/auth/logout` tồn tại                                            | S-09, S-10       | `AuthController`, `LogoutResponse`                               | IT                     |
+| AC-17 | Logout invalidates session                                                    | S-10             | `AuthController`                                                 | IT                     |
+| AC-18 | Logout clears cookie                                                          | S-10             | `AuthController`                                                 | IT                     |
+| AC-19 | Springdoc, `/v3/api-docs` available                                           | S-01, S-12       | `build.gradle`, `SpringdocConfig`                                | IT                     |
+| AC-20 | Swagger UI dev/staging                                                        | S-02, S-12       | `application-dev.properties`, `SpringdocConfig`                  | IT                     |
+| AC-21 | Swagger UI disabled prod                                                      | S-02, S-12       | `application-prod.properties`, `SpringdocConfig`                 | IT                     |
+| AC-22 | Auth endpoints documented                                                     | S-12             | `AuthController` annotations                                     | BB                     |
+| AC-23 | Kết nối PostgreSQL                                                            | S-01, S-02       | `build.gradle`, `application.properties`                         | IT                     |
+| AC-24 | User data trong PostgreSQL                                                    | S-04, S-06       | `V2__create_auth_tables.sql`, `User.java`                        | IT                     |
+| AC-25 | Flyway tự động chạy startup                                                   | S-01, S-02, S-03 | `build.gradle`, `application.properties`, `V1__init_schema.sql`  | IT                     |
+| AC-26 | V2 tạo đúng schema                                                            | S-04             | `V2__create_auth_tables.sql`                                     | IT                     |
+| AC-27 | V3 seed dev/test                                                              | S-05             | `V3__seed_dev_test_users.sql`                                    | IT                     |
+| AC-28 | V3 không chạy staging/prod                                                    | S-02, S-05       | `application-{profile}.properties`                               | IT                     |
+| AC-29 | In-memory session, không Redis                                                | S-08             | `SecurityConfig`                                                 | IT                     |
+| AC-30 | CORS allow localhost:5173                                                     | S-08             | `SecurityConfig`                                                 | IT, E2E                |
+| AC-31 | Không CORS wildcard                                                           | S-08             | `SecurityConfig`                                                 | IT                     |
+| AC-32 | Error response RFC 7807                                                       | S-11             | `GlobalExceptionHandler`                                         | IT, BB                 |
+| AC-33 | Login → GET /csrf thành công trên HTTP thật (dev proxy)                       | S-13, S-14       | `vite.config.ts`, `authApi.ts`, `AuthContext.tsx`                | IT, E2E                |
+| AC-34 | Cookie dev Chromium-compatible qua Vite proxy (SameSite=Lax, không cần HTTPS) | S-02, S-08, S-13 | `application-dev.properties`, `SecurityConfig`, `vite.config.ts` | E2E, Config review     |
+| AC-35 | Redirect sang `/` sau login + CSRF thành công                                 | S-15, S-16       | `LoginForm.tsx`, `App.tsx`                                       | FE component test, E2E |
+| AC-36 | Redirect về `/` nếu user đã authenticated truy cập `/login`                   | S-15, S-16       | `LoginPage.tsx`, `App.tsx`                                       | FE component test, E2E |

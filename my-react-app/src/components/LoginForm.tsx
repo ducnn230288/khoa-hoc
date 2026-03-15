@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 /**
@@ -7,6 +8,7 @@ import { useAuth } from "../hooks/useAuth";
  */
 export default function LoginForm() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +20,7 @@ export default function LoginForm() {
     setLoading(true);
     try {
       await login(username, password);
+      navigate("/", { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Sai tên đăng nhập hoặc mật khẩu";
       setError(msg || "Sai tên đăng nhập hoặc mật khẩu");

@@ -22,7 +22,7 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 
 ## 1. Spec / AC Coverage
 
-- [x] 1.1 — Tất cả 32 AC + NFR có ít nhất 1 automated test
+- [x] 1.1 — Tất cả 36 AC (AC-1 → AC-36) + NFR có ít nhất 1 automated test
 - [x] 1.2 — NFR-1→NFR-8 được cover bởi test hoặc config review
 - [x] 1.3 — Không có feature ngoài scope spec-pack §2
 - [x] 1.4 — Open Issues (OI-A', OI-B, OI-C) ghi chú rõ, không implement ngầm
@@ -42,6 +42,8 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 - [x] 2.8 — FE: API calls chỉ từ `src/api/authApi.ts`
 - [x] 2.9 — FE: Auth state trong 1 React context duy nhất (`AuthContext.tsx`)
 - [x] 2.10 — FE: Protected routes qua `ProtectedRoute` wrapper
+- [x] 2.11 — FE: Sau login thành công + lấy CSRF token, `AuthContext` gọi `navigate('/')` — có test `loginForm_onSuccess_redirectsToDashboard`
+- [x] 2.12 — FE: `LoginPage` kiểm tra `isAuthenticated`; nếu true — render `<Navigate to="/" replace />` — có test `loginPage_whenAuthenticated_redirectsToDashboard`
 
 ---
 
@@ -49,7 +51,7 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 
 - [x] 3.1 — Cookie `HttpOnly=true` — cấu hình trong `application.properties` + xác nhận bằng integration test
 - [x] 3.2 — Cookie `Secure=true` staging và prod — `application-staging.properties`, `application-prod.properties`
-- [x] 3.3 — Cookie `SameSite=None` — `application.properties` base: `server.servlet.session.cookie.same-site=none`
+- [x] 3.3 — Cookie `SameSite=Lax` cho `dev`, `SameSite=None` cho `staging`/`prod` — `application-dev.properties`: `server.servlet.session.cookie.same-site=lax`; base/staging/prod dùng `none`
 - [x] 3.4 — BCrypt cost factor = **12** — `SecurityConfig.java: new BCryptPasswordEncoder(12)`
 - [x] 3.5 — Không log password / hash / CSRF token; không có logger.info gọi với credentials
 - [x] 3.6 — CORS whitelist tường minh — `SecurityConfig.corsConfigurationSource()`, `allowedOrigins` từ property, không dùng `"*"`
@@ -80,6 +82,8 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 - [x] 5.3 — Spring 6 built-in `ProblemDetail` được dùng; không tạo custom duplicate class
 - [x] 5.4 — Vite proxy config trong `vite.config.ts` (`server.proxy`); `npm run build` pass không bị ảnh hưởng
 - [x] 5.5 — `fetchCsrf` được gọi trong `useEffect` khi app init (`AuthContext.tsx`)
+- [x] 5.6 — Flow HTTP thực tế: login → `GET /csrf` đếu trả 200 OK trên `http://localhost:5173` qua Vite proxy (AC-33) — xác nhận qua manual smoke + `authApi.test.ts`
+- [x] 5.7 — `SameSite=Lax` + `Secure=false` trong `application-dev.properties`; Chromium chấp nhận cookie trên local HTTP, không cần HTTPS (AC-34)
 
 ---
 
@@ -143,7 +147,7 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 
 ## 1. Spec / AC Coverage
 
-- [ ] 1.1 — Tất cả 32 AC + NFR có ít nhất 1 automated test
+- [ ] 1.1 — Tất cả 36 AC (AC-1 → AC-36) + NFR có ít nhất 1 automated test
 - [ ] 1.2 — NFR-1→NFR-8 được cover bởi test hoặc config review
 - [ ] 1.3 — Không có feature ngoài scope spec-pack §2
 - [ ] 1.4 — Open Issues (OI-A', OI-B, OI-C) ghi chú rõ, không implement ngầm
@@ -163,6 +167,8 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 - [ ] 2.8 — FE: API calls chỉ từ `src/api/authApi.ts`
 - [ ] 2.9 — FE: Auth state trong 1 React context duy nhất
 - [ ] 2.10 — FE: Protected routes qua `ProtectedRoute` wrapper
+- [ ] 2.11 — FE: Sau login thành công + lấy CSRF token, frontend navigate sang route `/`
+- [ ] 2.12 — FE: Nếu user đã authenticated truy cập `/login`, frontend redirect về `/`
 
 ---
 
@@ -170,7 +176,7 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 
 - [ ] 3.1 — Cookie `HttpOnly=true` mọi môi trường
 - [ ] 3.2 — Cookie `Secure=true` staging và prod
-- [ ] 3.3 — Cookie `SameSite=None` mọi môi trường
+- [ ] 3.3 — Cookie `SameSite=Lax` cho `dev`, `SameSite=None` cho `staging`/`prod`
 - [ ] 3.4 — BCrypt cost factor = **12**
 - [ ] 3.5 — Không log password / hash / CSRF token ở bất kỳ level
 - [ ] 3.6 — CORS whitelist tường minh, không dùng `"*"`
@@ -201,6 +207,8 @@ _Tạo: 2026-03-13 · Trạng thái: **[x] Đã điền — 2026-03-14**_
 - [ ] 5.3 — Spring 6 built-in `ProblemDetail` được dùng, không có custom duplicate class
 - [ ] 5.4 — Vite proxy config đúng, không ảnh hưởng production build
 - [ ] 5.5 — `fetchCsrf` được gọi khi app init nếu session còn hợp lệ
+- [ ] 5.6 — Flow login → GET /csrf trả 200 OK trên HTTP thực tế qua Vite proxy (AC-33)
+- [ ] 5.7 — `SameSite=Lax` + `Secure=false` trong `dev` — Chromium chấp nhận cookie trên local HTTP (AC-34)
 
 ---
 
