@@ -7,13 +7,13 @@
 
 ## 1. Ticket Metadata
 
-| Field | Value |
-| ----- | ----- |
-| Ticket | {{TICKET}} |
-| Feature | {{FEATURE_NAME}} |
-| Owner | |
-| Related branch | |
-| Last updated | YYYY-MM-DD |
+| Field          | Value            |
+| -------------- | ---------------- |
+| Ticket         | {{TICKET}}       |
+| Feature        | {{FEATURE_NAME}} |
+| Owner          |                  |
+| Related branch |                  |
+| Last updated   | YYYY-MM-DD       |
 
 ## 2. Objective
 
@@ -34,11 +34,11 @@
 
 ### In scope
 
-- 
+-
 
 ### Out of scope
 
-- 
+-
 
 ## 5. Proposed Behavior
 
@@ -56,57 +56,108 @@
 
 ## 6. Data, Contracts, And Interfaces
 
-| Interface | Change | Notes |
-| --------- | ------ | ----- |
-| API | | |
-| UI | | |
-| DB | | |
-| Config | | |
-| Logs/Audit | | |
+| Interface  | Change | Notes |
+| ---------- | ------ | ----- |
+| API        |        |       |
+| UI         |        |       |
+| DB         |        |       |
+| Config     |        |       |
+| Logs/Audit |        |       |
 
-## 7. Non-Functional Requirements
+## 7. Frontend Screens, States, And Wireframes
 
-| Category | Requirement |
-| -------- | ----------- |
-| Performance | |
-| Security | |
-| Observability | |
-| Reliability | |
-| Compatibility | |
+<!-- Required for tickets with user-facing UI changes. If the ticket has no frontend impact, write N/A and explain why. -->
 
-## 8. Acceptance Criteria
+### Screen inventory
 
-| AC | Statement | Test type |
-| -- | --------- | --------- |
-| AC-1 | | UT / IT / E2E / BB |
+| Screen ID | Name | Entry trigger | Primary user goal | Notes |
+| --------- | ---- | ------------- | ----------------- | ----- |
+| S-1       |      |               |                   |       |
 
-## 9. Examples
+### Screen details
+
+#### Screen S-1: {{SCREEN_NAME}}
+
+- Purpose:
+- Entry trigger:
+- Primary actions:
+- Exit or next states:
+
+```text
++------------------------------------------------------------------------------+
+| Header / navigation                                                          |
+|------------------------------------------------------------------------------|
+| Page title                                                                   |
+|                                                                              |
+| Primary content area                                                         |
+|                                                                              |
+| Input / summary / list / form block                                          |
+|                                                                              |
+| [Primary CTA]                     [Secondary CTA]                            |
+|                                                                              |
+| Inline validation / helper / status message area                             |
++------------------------------------------------------------------------------+
+```
+
+### Interaction states
+
+| State ID | Trigger                    | User-visible behavior | Recovery or next action |
+| -------- | -------------------------- | --------------------- | ----------------------- |
+| ST-1     | Initial load               |                       |                         |
+| ST-2     | Loading / submitting       |                       |                         |
+| ST-3     | Empty / no data            |                       |                         |
+| ST-4     | Success                    |                       |                         |
+| ST-5     | Error / validation failure |                       |                         |
+
+### Wireframe notes
+
+- Capture every new or materially changed screen and every state that changes layout, CTA visibility, or messaging.
+- Label primary CTA, secondary CTA, validation areas, error banners, loading indicators, and empty states directly in the ASCII wireframe or notes.
+- If one screen has multiple materially different states, add separate wireframes or clearly annotate the differences.
+
+## 8. Non-Functional Requirements
+
+| Category      | Requirement |
+| ------------- | ----------- |
+| Performance   |             |
+| Security      |             |
+| Observability |             |
+| Reliability   |             |
+| Compatibility |             |
+
+## 9. Acceptance Criteria
+
+| AC   | Statement | Test type          |
+| ---- | --------- | ------------------ |
+| AC-1 |           | UT / IT / E2E / BB |
+
+## 10. Examples
 
 ### Main path
 
-1. 
+1.
 
 ### Error paths
 
-1. 
+1.
 
 ### Boundary cases
 
-1. 
+1.
 
-## 10. Open Issues
+## 11. Open Issues
 
-| ID | Question | Owner | Resolution needed by |
-| -- | -------- | ----- | -------------------- |
-| OI-1 | | | |
+| ID   | Question | Owner | Resolution needed by |
+| ---- | -------- | ----- | -------------------- |
+| OI-1 |          |       |                      |
 
-## 11. Risks
+## 12. Risks
 
 | Risk | Likelihood | Impact | Mitigation |
 | ---- | ---------- | ------ | ---------- |
-| | | | |
+|      |            |        |            |
 
-## 12. Applicable Common Rules
+## 13. Applicable Common Rules
 
 - Architecture docs reviewed: [ ] `overview.md`
 - Architecture docs reviewed: [ ] `key-flows.md`
@@ -124,7 +175,6 @@
 
 ## Traceability Table
 
-| AC | Components/Files likely affected | Planned verification |
-| -- | -------------------------------- | -------------------- |
-| AC-1 | | |
-
+| AC   | Components/Files likely affected | Planned verification |
+| ---- | -------------------------------- | -------------------- |
+| AC-1 |                                  |                      |
