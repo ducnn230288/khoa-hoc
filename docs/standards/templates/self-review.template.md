@@ -1,5 +1,6 @@
 # Self-Review — {{TICKET}} ({{FEATURE_NAME}})
 
+> Date: [YYYY-MM-DD]
 > Filled by Claude after implementation, before human review.  
 > Every checkbox must have evidence (command output or file + line reference).
 
@@ -7,9 +8,9 @@
 
 ## 1. AC Completion Status
 
-| AC   | Status               | Evidence |
-| ---- | -------------------- | -------- |
-| AC-1 | ✅ / ❌ / 🔶 partial |          |
+| #   | AC                | Status               | Evidence |
+| --- | ----------------- | -------------------- | -------- |
+| 1   | AC-[feature]-1/v1 | ✅ / ❌ / 🔶 partial |          |
 
 ## 2. Checklist Items (from review-checklist.md)
 
@@ -58,6 +59,6 @@
 
 ## 5. Known Risks / Not Covered / Remaining Tasks
 
-| Item | Reason not covered | Recommended action |
-| ---- | ------------------ | ------------------ |
-|      |                    |                    |
+| #   | Item | Reason not covered | Recommended action |
+| --- | ---- | ------------------ | ------------------ |
+| 1   |      |                    |                    |

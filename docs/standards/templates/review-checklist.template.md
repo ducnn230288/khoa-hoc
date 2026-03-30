@@ -1,5 +1,6 @@
 # Review Checklist — {{TICKET}} ({{FEATURE_NAME}})
 
+> Date: [YYYY-MM-DD]
 > Severity: **Blocker** = must fix before merge | **Major** = fix in this PR | **Minor** = fix or log as tech-debt
 
 ---
@@ -77,6 +78,6 @@
 
 ## AC Mapping Table
 
-| AC   | Checklist items that validate it |
-| ---- | -------------------------------- |
-| AC-1 | RC-01, RC-06, RC-19              |
+| #   | AC                | Checklist items that validate it |
+| --- | ----------------- | -------------------------------- |
+| 1   | AC-[feature]-1/v1 | RC-01, RC-06, RC-19              |
