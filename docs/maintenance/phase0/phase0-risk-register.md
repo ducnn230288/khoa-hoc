@@ -1,0 +1,15 @@
+# Phase 0-A Risk Register
+
+| ID | Risk | Impact | Mitigation | Acceptance Rationale |
+| --- | ---- | ------ | ---------- | -------------------- |
+| R-01 | Legacy docs were deleted earlier and may contain useful templates or prior agreements. | Later phases may miss context or duplicate prior work. | Keep Phase 0-A scope narrow, preserve the fact of deletion in the evidence pack, and require deliberate restoration later if needed. | Accepted for now because restoring them automatically would risk overwriting intentional user changes. |
+| R-02 | `docs/architecture/` and `docs/standards/` are placeholders only after Phase 0-A. | Authority may still rely heavily on code and ad hoc memory until Phase 1 writes actual content. | Explicitly state authority boundaries in `README.md` and require later phases to populate living docs before relying on them. | Accepted because the current phase goal is storage and safety rails, not full content authoring. |
+| R-03 | Monorepo structure contains both backend and frontend with no root-level approved operating docs yet. | Teams may document one side and overlook the other. | Treat code and config from both `demo/` and `my-react-app/` as baseline authoritative inputs until cross-cutting docs are written. | Accepted because both codebases are present and discoverable, even though shared docs are still sparse. |
+| R-04 | Evidence quality depends on disciplined updates by future contributors. | The docs structure can exist but still become stale. | Put update triggers and owner expectations in `docs/maintenance/phase0/README.md`; require review to check file-based evidence. | Accepted because no automation requirement exists in this phase. |
+| R-05 | Placeholder directories tracked with `.gitkeep` do not explain content conventions by themselves. | Future files may be misplaced even though folders exist. | Record the directory taxonomy and prohibitions in `phase0-decisions.md`; let Phase 1 add actual standards/living-doc content. | Accepted because naming plus policy is sufficient for this initial bootstrap. |
+| R-06 | The common base is derived from a repo that is still mostly starter code. | Later contributors may over-trust the target conventions as if they were already implemented. | Distinguish observed baseline from target structure inside architecture docs and require ticket docs to cite actual files they change. | Accepted because Phase 0-B now records both the current state and the intended layering direction. |
+| R-07 | Frontend test tooling is not fully configured yet. | Future tickets may over-claim verification completeness on the frontend. | Document the current tooling gap in `docs/standards/testing.md` and require explicit disclosure when tests cannot run. | Accepted because the gap is now visible and can be addressed deliberately in a later ticket. |
+
+## Risk Posture Summary
+
+Residual risks are primarily governance and maturity risks, not runtime risks. They are acceptable for Phase 0 because the phase goal is to establish safe rails, durable evidence, and reusable common guidance rather than a fully realized production architecture.

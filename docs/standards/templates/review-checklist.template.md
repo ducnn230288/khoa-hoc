@@ -1,82 +1,60 @@
-# Review Checklist — {{TICKET}} ({{FEATURE_NAME}})
+# Review Checklist - {{TICKET}} ({{FEATURE_NAME}})
 
-> Severity: **Blocker** = must fix before merge | **Major** = fix in this PR | **Minor** = fix or log as tech-debt
-
----
-
-## 1. Spec / AC
-
-| #     | Item                                                            | Severity | Status |
-| ----- | --------------------------------------------------------------- | -------- | ------ |
-| RC-01 | All AC are implemented and demonstrably satisfied               | Blocker  | [ ]    |
-| RC-02 | No behaviour outside spec-pack scope was added                  | Blocker  | [ ]    |
-| RC-03 | Open Issues are still listed; none implemented without approval | Blocker  | [ ]    |
-
-## 2. Design / Dependencies
-
-| #     | Item                                                              | Severity | Status |
-| ----- | ----------------------------------------------------------------- | -------- | ------ |
-| RC-04 | Layer boundaries respected (no domain logic in controllers, etc.) | Major    | [ ]    |
-| RC-05 | No circular dependencies introduced                               | Major    | [ ]    |
-| RC-06 | Public API / contract matches spec                                | Blocker  | [ ]    |
-
-## 3. Security
-
-| #     | Item                                                  | Severity | Status |
-| ----- | ----------------------------------------------------- | -------- | ------ |
-| RC-07 | All user inputs validated and sanitised               | Blocker  | [ ]    |
-| RC-08 | Authorization checked on every endpoint/action        | Blocker  | [ ]    |
-| RC-09 | No secrets, keys, or PII in logs, diffs, or responses | Blocker  | [ ]    |
-| RC-10 | No SQL injection / XSS / command injection risk       | Blocker  | [ ]    |
-
-## 4. Performance
-
-| #     | Item                                                     | Severity | Status |
-| ----- | -------------------------------------------------------- | -------- | ------ |
-| RC-11 | No N+1 query introduced                                  | Major    | [ ]    |
-| RC-12 | No unnecessary large payload or blocking I/O on hot path | Major    | [ ]    |
-
-## 5. Compatibility
-
-| #     | Item                                     | Severity | Status |
-| ----- | ---------------------------------------- | -------- | ------ |
-| RC-13 | Existing APIs remain backward compatible | Blocker  | [ ]    |
-| RC-14 | DB migration is reversible               | Major    | [ ]    |
-
-## 6. Logging / Audit
-
-| #     | Item                                             | Severity | Status |
-| ----- | ------------------------------------------------ | -------- | ------ |
-| RC-15 | Key operations (create/update/delete) are logged | Major    | [ ]    |
-| RC-16 | Log messages contain no PII                      | Blocker  | [ ]    |
-
-## 7. Error Handling
-
-| #     | Item                                                            | Severity | Status |
-| ----- | --------------------------------------------------------------- | -------- | ------ |
-| RC-17 | All exceptions are caught and return meaningful error responses | Major    | [ ]    |
-| RC-18 | Client receives no internal stack trace                         | Major    | [ ]    |
-
-## 8. Tests
-
-| #     | Item                                                       | Severity | Status |
-| ----- | ---------------------------------------------------------- | -------- | ------ |
-| RC-19 | FE unit tests cover form validation and state transitions  | Major    | [ ]    |
-| RC-20 | BE unit tests cover boundary values and exceptions         | Major    | [ ]    |
-| RC-21 | API integration tests cover auth + happy path + error path | Major    | [ ]    |
-| RC-22 | E2E test covers the main user story (normal + key error)   | Major    | [ ]    |
-
-## 9. Operations
-
-| #     | Item                                                    | Severity | Status |
-| ----- | ------------------------------------------------------- | -------- | ------ |
-| RC-23 | Rollback procedure is documented                        | Major    | [ ]    |
-| RC-24 | Feature flag or config switch used if high-risk rollout | Minor    | [ ]    |
+> Use this for implementation review after the change is coded.  
+> Severity meanings: `Blocker` = must fix before merge, `Major` = fix in this change or log an accepted exception, `Minor` = improve now or log for follow-up.
 
 ---
 
-## AC Mapping Table
+## 1. Scope And Specification
 
-| AC   | Checklist items that validate it |
-| ---- | -------------------------------- |
-| AC-1 | RC-01, RC-06, RC-19              |
+| ID | Check | Severity | Status | Evidence |
+| -- | ----- | -------- | ------ | -------- |
+| RC-01 | All acceptance criteria are implemented or explicitly deferred. | Blocker | [ ] | |
+| RC-02 | No behavior outside approved scope was added without documentation. | Blocker | [ ] | |
+| RC-03 | Open issues were not silently implemented as assumptions. | Blocker | [ ] | |
+
+## 2. Architecture And Design
+
+| ID | Check | Severity | Status | Evidence |
+| -- | ----- | -------- | ------ | -------- |
+| RC-04 | Layer boundaries follow `docs/architecture/overview.md`. | Major | [ ] | |
+| RC-05 | Dependency direction stays inward and avoids hidden coupling. | Major | [ ] | |
+| RC-06 | New abstractions are justified by actual complexity. | Minor | [ ] | |
+
+## 3. Coding Rules
+
+| ID | Check | Severity | Status | Evidence |
+| -- | ----- | -------- | ------ | -------- |
+| RC-07 | Rule 10 was respected. | Major | [ ] | |
+| RC-08 | Rule 14 was respected at important boundaries. | Major | [ ] | |
+| RC-09 | Rule 18 was respected and unrelated work was not reverted. | Blocker | [ ] | |
+| RC-10 | Rule 19 was respected and common-base docs were not polluted with ticket details. | Major | [ ] | |
+
+## 4. Security Rules
+
+| ID | Check | Severity | Status | Evidence |
+| -- | ----- | -------- | ------ | -------- |
+| RC-11 | Security-relevant defaults and config are explicit. | Blocker | [ ] | |
+| RC-12 | Inputs are validated or constrained at the right boundary. | Blocker | [ ] | |
+| RC-13 | No secrets or sensitive data were introduced into code, docs, logs, or samples. | Blocker | [ ] | |
+| RC-14 | Authorization or protection of mutating operations is addressed where relevant. | Blocker | [ ] | |
+| RC-15 | Errors and logs do not leak internal or sensitive details. | Major | [ ] | |
+
+## 5. Testing Rules
+
+| ID | Check | Severity | Status | Evidence |
+| -- | ----- | -------- | ------ | -------- |
+| RC-16 | Verification evidence exists for the changed behavior. | Blocker | [ ] | |
+| RC-17 | The smallest meaningful test layer was chosen. | Major | [ ] | |
+| RC-18 | Missing or unrun tests are explicitly documented. | Blocker | [ ] | |
+| RC-19 | Regression protection was added for defects when appropriate. | Major | [ ] | |
+| RC-20 | AC-to-evidence traceability is visible across deliverables. | Major | [ ] | |
+
+## 6. Operations And Rollback
+
+| ID | Check | Severity | Status | Evidence |
+| -- | ----- | -------- | ------ | -------- |
+| RC-21 | Config and environment impacts are documented. | Major | [ ] | |
+| RC-22 | Rollback procedure is realistic for this change. | Major | [ ] | |
+| RC-23 | Remaining risks are stated clearly. | Major | [ ] | |
+

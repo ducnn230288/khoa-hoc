@@ -1,93 +1,130 @@
-# Spec Pack — {{TICKET}} ({{FEATURE_NAME}})
+# Spec Pack - {{TICKET}} ({{FEATURE_NAME}})
 
-> **Single source of truth for this change.**  
-> Do not implement anything not written here. Unknowns → Open Issues.
+> Single source of truth for ticket scope and acceptance.  
+> Use together with `docs/architecture/overview.md`, `docs/architecture/key-flows.md`, and rules 10-40 under `docs/standards/`.
 
 ---
 
-## 1. Background / Purpose
+## 1. Ticket Metadata
 
-<!-- Why does this change exist? What problem does it solve? -->
+| Field | Value |
+| ----- | ----- |
+| Ticket | {{TICKET}} |
+| Feature | {{FEATURE_NAME}} |
+| Owner | |
+| Related branch | |
+| Last updated | YYYY-MM-DD |
 
-## 2. Scope
+## 2. Objective
+
+<!-- Why this change exists and what outcome it should create. -->
+
+## 3. Baseline
+
+### Existing code and config to read first
+
+- [ ]
+- [ ]
+
+### Current behavior
+
+<!-- Describe the observed "as-is" behavior from code, config, or approved docs. -->
+
+## 4. Scope
 
 ### In scope
 
--
+- 
 
 ### Out of scope
 
--
+- 
 
-## 3. Glossary
+## 5. Proposed Behavior
 
-| Term | Definition |
-| ---- | ---------- |
-|      |            |
+### Main behavior
 
-## 4. As-Is / To-Be
+<!-- Describe the expected behavior in enough detail that implementation can start without guesswork. -->
 
-| Aspect | As-Is | To-Be |
-| ------ | ----- | ----- |
-|        |       |       |
+### Error behavior
 
-## 5. Spec Details
+<!-- Expected failures, validation, or fallback paths. -->
 
-<!-- Functional requirements. Be precise enough that an engineer can implement without asking. -->
+### Environment-specific behavior
 
-## 6. Non-Functional Requirements
+<!-- Differences across dev/staging/prod if any. -->
 
-| Category      | Requirement |
-| ------------- | ----------- |
-| Performance   |             |
-| Security      |             |
-| Availability  |             |
-| Observability |             |
+## 6. Data, Contracts, And Interfaces
 
-## 7. Acceptance Criteria
+| Interface | Change | Notes |
+| --------- | ------ | ----- |
+| API | | |
+| UI | | |
+| DB | | |
+| Config | | |
+| Logs/Audit | | |
 
-<!-- Each AC must be a testable statement. -->
+## 7. Non-Functional Requirements
 
-| ID   | Statement | Test type    |
-| ---- | --------- | ------------ |
-| AC-1 |           | UT/IT/E2E/BB |
-| AC-2 |           |              |
+| Category | Requirement |
+| -------- | ----------- |
+| Performance | |
+| Security | |
+| Observability | |
+| Reliability | |
+| Compatibility | |
 
-## 8. Examples
+## 8. Acceptance Criteria
 
-### Normal paths
+| AC | Statement | Test type |
+| -- | --------- | --------- |
+| AC-1 | | UT / IT / E2E / BB |
 
-1.
-2.
+## 9. Examples
+
+### Main path
+
+1. 
 
 ### Error paths
 
-1.
-2.
+1. 
 
 ### Boundary cases
 
-1.
-2.
+1. 
 
-## 9. Open Issues
+## 10. Open Issues
 
-<!-- Items that must be decided by a human before implementation starts. -->
+| ID | Question | Owner | Resolution needed by |
+| -- | -------- | ----- | -------------------- |
+| OI-1 | | | |
 
-| #    | Question | Owner | Deadline |
-| ---- | -------- | ----- | -------- |
-| OI-1 |          |       |          |
-
-## 10. Risks
+## 11. Risks
 
 | Risk | Likelihood | Impact | Mitigation |
 | ---- | ---------- | ------ | ---------- |
-|      |            |        |            |
+| | | | |
+
+## 12. Applicable Common Rules
+
+- Architecture docs reviewed: [ ] `overview.md`
+- Architecture docs reviewed: [ ] `key-flows.md`
+- Coding rules to watch:
+  - [ ] Rule 10
+  - [ ] Rule 19
+- Testing rules to watch:
+  - [ ] Rule 20
+  - [ ] Rule 29
+- Security rules to watch:
+  - [ ] Rule 30
+  - [ ] Rule 40
 
 ---
 
 ## Traceability Table
 
-| AC   | Screen/API | DB  | Logs | Permissions | Test types    |
-| ---- | ---------- | --- | ---- | ----------- | ------------- |
-| AC-1 |            |     |      |             | UT · IT · E2E |
+| AC | Components/Files likely affected | Planned verification |
+| -- | -------------------------------- | -------------------- |
+| AC-1 | | |
+

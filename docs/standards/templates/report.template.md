@@ -1,102 +1,73 @@
-# Change Report — {{TICKET}} ({{FEATURE_NAME}})
+# Change Report - {{TICKET}} ({{FEATURE_NAME}})
 
-> Audience: next engineer, reviewer, on-call.  
-> Must be understandable from the body alone. Include paths to evidence.
+> Audience: reviewer, next engineer, and on-call support.  
+> The report should be understandable without reopening the entire conversation.
 
 ---
 
 ## 1. Change Summary
 
-<!-- 1-page overview: what changed, why, and what it affects. -->
-
-**Ticket:** {{TICKET}}  
-**Branch:** {{BRANCH_NAME}}  
-**Date:** YYYY-MM-DD  
-**Author:** (Claude-assisted)
+| Field | Value |
+| ----- | ----- |
+| Ticket | {{TICKET}} |
+| Feature | {{FEATURE_NAME}} |
+| Branch | |
+| Date | YYYY-MM-DD |
+| Author | |
 
 ### What changed
 
--
+- 
 
 ### Why
 
--
-
----
+- 
 
 ## 2. Impact Scope
 
-| Area              | Detail |
-| ----------------- | ------ |
-| Files changed     |        |
-| DB schema         |        |
-| API contract      |        |
-| Config            |        |
-| Logs              |        |
-| Permissions/Roles |        |
+| Area | Detail |
+| ---- | ------ |
+| Backend | |
+| Frontend | |
+| Contracts | |
+| Config | |
+| DB/schema | |
+| Docs | |
 
----
+## 3. Review Summary
 
-## 3. Review Results
+| Review source | Result | Notes |
+| ------------- | ------ | ----- |
+| Self-review | Pass / Fail / Partial | |
+| Human review | Approve / Changes requested / Pending | |
 
-### Claude self-check (`docs/changes/{{TICKET}}/self-review.md`)
+## 4. Verification Summary
 
-- Blockers found:
-- Majors found:
-- All AC satisfied: Yes / No / Partial
+| Type | Command or method | Result | Notes |
+| ---- | ----------------- | ------ | ----- |
+| Backend tests | `cd demo && ./gradlew test` | PASS / FAIL / NOT RUN | |
+| Frontend lint | `cd my-react-app && npm run lint` | PASS / FAIL / NOT RUN | |
+| Frontend build | `cd my-react-app && npm run build` | PASS / FAIL / NOT RUN | |
+| Other | | | |
 
-### Codex review (if run)
+## 5. Risks And Follow-Ups
 
-- Overall verdict: Approve / Request changes
-- Key findings:
-  -
+| Item | Owner | Next action |
+| ---- | ----- | ----------- |
+| | | |
 
-### Human review findings
+## 6. Rollback
 
-| Finding | Severity | Action taken |
-| ------- | -------- | ------------ |
-|         |          |              |
-
----
-
-## 4. Test Results
-
-| Test type | Command               | Result      | Notes |
-| --------- | --------------------- | ----------- | ----- |
-| FE UT     | `npm test`            | PASS / FAIL |       |
-| BE UT     | `./gradlew test`      | PASS / FAIL |       |
-| API IT    |                       |             |       |
-| E2E       | `npx playwright test` | PASS / FAIL |       |
-| Black-box | manual                | PASS / FAIL |       |
-
-Full details: `docs/changes/{{TICKET}}/test-results.md`
-
----
-
-## 5. Remaining Tasks / Next Actions
-
-| Task | Owner | Due |
-| ---- | ----- | --- |
-|      |       |     |
-
----
-
-## 6. Rollback Procedure
-
-<!-- Steps to undo this change if it causes a production issue. -->
-
-1.
-
----
+1. 
 
 ## 7. Deliverables Index
 
-| File                                            | Purpose                               |
-| ----------------------------------------------- | ------------------------------------- |
-| `docs/changes/{{TICKET}}/spec-pack.md`          | Single source of truth for specs & AC |
-| `docs/changes/{{TICKET}}/impl-plan.md`          | Implementation approach & steps       |
-| `docs/changes/{{TICKET}}/review-checklist.md`   | Review perspectives                   |
-| `docs/changes/{{TICKET}}/self-review.md`        | Claude self-check results             |
-| `docs/changes/{{TICKET}}/test-plan.md`          | Test coverage plan                    |
-| `docs/changes/{{TICKET}}/test-results.md`       | Test execution results                |
-| `docs/changes/{{TICKET}}/blackbox-testcases.md` | Black-box test cases                  |
+| File | Purpose |
+| ---- | ------- |
+| `docs/changes/{{TICKET}}/spec-pack.md` | Approved scope and AC |
+| `docs/changes/{{TICKET}}/impl-plan.md` | Implementation approach |
+| `docs/changes/{{TICKET}}/review-checklist.md` | Review checklist |
+| `docs/changes/{{TICKET}}/self-review.md` | Implementer self-review |
+| `docs/changes/{{TICKET}}/test-plan.md` | Verification plan |
+| `docs/changes/{{TICKET}}/report.md` | Handoff summary |
+

@@ -1,64 +1,61 @@
-# Implementation Plan — {{TICKET}} ({{FEATURE_NAME}})
+# Implementation Plan - {{TICKET}} ({{FEATURE_NAME}})
 
-> Derived from: `docs/changes/{{TICKET}}/spec-pack.md`  
-> Branch: `{{BRANCH_NAME}}`
+> Derived from `docs/changes/{{TICKET}}/spec-pack.md`.  
+> Must stay consistent with `docs/architecture/*` and rules 10-40.
 
 ---
 
 ## 1. Approach
 
-<!-- Chosen implementation approach and rationale. Compare alternatives if relevant. -->
+<!-- Chosen implementation approach and why it fits the current repo architecture. -->
 
-## 2. Impact Scope
-
-### Files / modules to change
-
-| File | Change type       | Notes |
-| ---- | ----------------- | ----- |
-|      | Add/Modify/Delete |       |
-
-### Other impact areas
-
-| Area              | Impact | Notes |
-| ----------------- | ------ | ----- |
-| DB schema         |        |       |
-| API contract      |        |       |
-| Config            |        |       |
-| Logs              |        |       |
-| Permissions/Roles |        |       |
-| FE components     |        |       |
-
-## 3. Existing code to read first
-
-<!-- List files you must understand before editing. -->
+## 2. Files To Read Before Editing
 
 - [ ]
 - [ ]
 
-## 4. Implementation Steps
+## 3. Impact Scope
 
-<!-- Each step must be small enough to review independently. -->
+| Area | Expected impact | Notes |
+| ---- | --------------- | ----- |
+| Backend code | | |
+| Frontend code | | |
+| Contracts | | |
+| Config | | |
+| DB/schema | | |
+| Docs | | |
 
-| #   | Step | Files touched | Verification |
-| --- | ---- | ------------- | ------------ |
-| 1   |      |               |              |
-| 2   |      |               |              |
+## 4. Planned File Changes
 
-## 5. Risks & Mitigations
+| File | Change type | Reason |
+| ---- | ----------- | ------ |
+| | Add / Modify / Delete | |
+
+## 5. Implementation Steps
+
+| Step | Description | Files touched | Verification |
+| ---- | ----------- | ------------- | ------------ |
+| 1 | | | |
+
+## 6. Rule Checks
+
+| Rule | How this plan satisfies it |
+| ---- | -------------------------- |
+| Rule 10 | |
+| Rule 20 | |
+| Rule 30 | |
+
+## 7. Risks And Mitigations
 
 | Risk | Mitigation |
 | ---- | ---------- |
-|      |            |
+| | |
 
-## 6. Rollback Procedure
+## 8. Rollback Plan
 
-<!-- How to undo this change if it causes a production issue. -->
+1. 
 
-1.
-
-## 7. Verification Steps
-
-<!-- Commands to run to confirm the change is working. -->
+## 9. Verification Commands
 
 ```bash
 # Backend
@@ -68,10 +65,11 @@ cd demo && ./gradlew test
 cd my-react-app && npm run lint && npm run build
 ```
 
----
+Add ticket-specific commands below if needed.
 
-## AC Mapping Table
+## 10. AC Mapping
 
-| AC   | Step(s) that satisfy it | How to verify |
-| ---- | ----------------------- | ------------- |
-| AC-1 | Step X                  |               |
+| AC | Planned step(s) | Verification approach |
+| -- | --------------- | --------------------- |
+| AC-1 | | |
+

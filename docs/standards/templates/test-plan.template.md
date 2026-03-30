@@ -1,57 +1,55 @@
-# Test Plan — {{TICKET}} ({{FEATURE_NAME}})
+# Test Plan - {{TICKET}} ({{FEATURE_NAME}})
 
-> Every AC must be covered by at least one test type.
+> Every acceptance criterion should map to at least one verification path.  
+> If a needed test layer is not available in the repo yet, record that gap explicitly.
 
 ---
 
 ## 1. Coverage Matrix
 
-| AC   | FE UT | BE UT | API IT | E2E | Black-box |
-| ---- | ----- | ----- | ------ | --- | --------- |
-| AC-1 |       |       |        |     |           |
+| AC | FE unit | BE unit | Integration | E2E | Manual / black-box |
+| -- | ------- | ------- | ----------- | --- | ------------------ |
+| AC-1 | | | | | |
 
-## 2. FE Unit Tests
+## 2. Backend Tests
 
-| Test file | What it tests | AC  |
-| --------- | ------------- | --- |
-|           |               |     |
+| Test file or class | Behavior covered | AC | Why this layer |
+| ------------------ | ---------------- | -- | -------------- |
+| | | | |
 
-**Focus areas:** form validation, state transitions, error display, conditional rendering.
+## 3. Frontend Tests
 
-## 3. BE Unit Tests
+| Test file or suite | Behavior covered | AC | Why this layer |
+| ------------------ | ---------------- | -- | -------------- |
+| | | | |
 
-| Test class | What it tests | AC  |
-| ---------- | ------------- | --- |
-|            |               |     |
+## 4. Integration And Contract Tests
 
-**Focus areas:** boundary values, exception paths, permission logic in use cases/domain.
+| Boundary | Scenario | AC | Evidence target |
+| -------- | -------- | -- | --------------- |
+| | | | |
 
-## 4. API Integration Tests
+## 5. Manual Or Black-Box Checks
 
-| Endpoint | Scenarios                                  | AC  |
-| -------- | ------------------------------------------ | --- |
-|          | happy path, auth failure, validation error |     |
+| Scenario | Steps | Expected result | AC |
+| -------- | ----- | --------------- | -- |
+| | | | |
 
-## 5. E2E Tests (Playwright)
-
-| Scenario           | Steps | Expected result | AC  |
-| ------------------ | ----- | --------------- | --- |
-| Main flow (normal) |       |                 |     |
-| Key error path     |       |                 |     |
-
-## 6. Test Execution Commands
+## 6. Commands To Run
 
 ```bash
-# FE unit tests
-cd my-react-app && npm test
-
-# BE unit tests
+# Backend
 cd demo && ./gradlew test
 
-# E2E
-cd my-react-app && npx playwright test
+# Frontend
+cd my-react-app && npm run lint && npm run build
 ```
 
-## 7. Notes / Constraints
+Add ticket-specific test commands below if new tooling is introduced.
 
-<!-- Mocking policy, test data requirements, known flaky areas -->
+## 7. Constraints And Gaps
+
+- Current repo baseline does not include a configured frontend unit-test runner.
+- Current repo baseline does not include a configured E2E runner.
+- Add any ticket-specific test limitations here.
+
