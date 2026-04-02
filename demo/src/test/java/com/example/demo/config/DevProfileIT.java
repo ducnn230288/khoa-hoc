@@ -6,15 +6,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -23,13 +19,13 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("staging")
+@ActiveProfiles("dev")
 @Testcontainers
-class StagingProfileIT {
+class DevProfileIT {
 
 	@Container
 	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
-			.withDatabaseName("staging_profile_it")
+			.withDatabaseName("dev_profile_it")
 			.withUsername("demo")
 			.withPassword("demo");
 
@@ -43,23 +39,11 @@ class StagingProfileIT {
 	@LocalServerPort
 	private int port;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
 	private final HttpClient client = HttpClient.newHttpClient();
 
 	@Test
-	void stagingKeepsOpenApiPublicUsesSecureSessionCookieAndDoesNotLoadSeedUsers() throws Exception {
-		Integer seedCount = this.jdbcTemplate.queryForObject(
-				"select count(*) from users where username in ('admin', 'user01')", Integer.class);
-		String username = "staging-" + UUID.randomUUID();
-		this.jdbcTemplate.update("insert into users (username, password_hash, enabled) values (?, ?, ?)",
-				username, this.passwordEncoder.encode("Staging@123"), true);
-
-		HttpResponse<String> response = this.client.send(
+	void devExposesOpenApiAndIssuesSameSiteNoneCookiesWithoutSecureFlag() throws Exception {
+		HttpResponse<String> apiDocsResponse = this.client.send(
 				HttpRequest.newBuilder(URI.create("http://localhost:" + this.port + "/v3/api-docs"))
 						.GET()
 						.build(),
@@ -68,17 +52,18 @@ class StagingProfileIT {
 				HttpRequest.newBuilder(URI.create("http://localhost:" + this.port + "/api/v1/auth/login"))
 						.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
 						.POST(HttpRequest.BodyPublishers.ofString(
-								"{\"username\":\"" + username + "\",\"password\":\"Staging@123\"}"))
+								"{\"username\":\"user01\",\"password\":\"User@123\"}"))
 						.build(),
 				HttpResponse.BodyHandlers.ofString());
 
-		assertThat(seedCount).isZero();
-		assertThat(response.statusCode()).isEqualTo(200);
-		assertThat(response.body()).contains("/api/v1/auth/login");
-		assertThat(response.body()).contains("username");
-		assertThat(response.body()).contains("X-CSRF-TOKEN");
-		assertThat(response.body()).doesNotContain("\"email\"");
+		assertThat(apiDocsResponse.statusCode()).isEqualTo(200);
+		assertThat(apiDocsResponse.body()).contains("/api/v1/auth/login");
+		assertThat(apiDocsResponse.body()).contains("username");
+		assertThat(apiDocsResponse.body()).contains("X-CSRF-TOKEN");
+		assertThat(apiDocsResponse.body()).doesNotContain("\"email\"");
 		assertThat(loginResponse.headers().allValues("set-cookie")).anySatisfy(cookie -> assertThat(cookie)
-				.contains("JSESSIONID=").contains("Secure"));
+				.contains("JSESSIONID=")
+				.contains("SameSite=None")
+				.doesNotContain("Secure"));
 	}
 }

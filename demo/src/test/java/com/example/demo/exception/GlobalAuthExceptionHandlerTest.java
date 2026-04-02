@@ -32,8 +32,8 @@ class GlobalAuthExceptionHandlerTest {
 
 		ErrorResponse body = this.objectMapper.readValue(response.getContentAsByteArray(), ErrorResponse.class);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(body.code()).isEqualTo("AUTH_SESSION_REQUIRED");
-		assertThat(body.path()).isEqualTo("/api/v1/auth/csrf");
+		assertEnvelope(body, "AUTH_SESSION_REQUIRED", "/api/v1/auth/csrf");
+		assertThat(response.getContentType()).isEqualTo("application/json");
 		verify(this.auditLogger).logAccessDeniedUnauthenticated("/api/v1/auth/csrf");
 	}
 
@@ -48,7 +48,7 @@ class GlobalAuthExceptionHandlerTest {
 
 		ErrorResponse body = this.objectMapper.readValue(response.getContentAsByteArray(), ErrorResponse.class);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-		assertThat(body.code()).isEqualTo("AUTH_SESSION_EXPIRED");
+		assertEnvelope(body, "AUTH_SESSION_EXPIRED", "/api/v1/auth/csrf");
 		verify(this.auditLogger).logAccessDeniedSessionExpired("/api/v1/auth/csrf");
 	}
 
@@ -61,7 +61,7 @@ class GlobalAuthExceptionHandlerTest {
 
 		ErrorResponse body = this.objectMapper.readValue(response.getContentAsByteArray(), ErrorResponse.class);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-		assertThat(body.code()).isEqualTo("AUTH_CSRF_INVALID");
+		assertEnvelope(body, "AUTH_CSRF_INVALID", "/api/v1/auth/logout");
 		verify(this.auditLogger).logAccessDeniedCsrf("/api/v1/auth/logout");
 	}
 
@@ -73,7 +73,7 @@ class GlobalAuthExceptionHandlerTest {
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().code()).isEqualTo("AUTH_INVALID_CREDENTIALS");
+		assertEnvelope(response.getBody(), "AUTH_INVALID_CREDENTIALS", "/api/v1/auth/login");
 	}
 
 	@Test
@@ -84,6 +84,14 @@ class GlobalAuthExceptionHandlerTest {
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		assertThat(response.getBody()).isNotNull();
-		assertThat(response.getBody().code()).isEqualTo("AUTH_USER_DISABLED");
+		assertEnvelope(response.getBody(), "AUTH_USER_DISABLED", "/api/v1/auth/login");
+	}
+
+	private void assertEnvelope(ErrorResponse body, String code, String path) {
+		assertThat(body).isNotNull();
+		assertThat(body.code()).isEqualTo(code);
+		assertThat(body.message()).isNotBlank();
+		assertThat(body.path()).isEqualTo(path);
+		assertThat(body.timestamp()).isNotNull();
 	}
 }
